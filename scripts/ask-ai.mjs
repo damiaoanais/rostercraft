@@ -6,6 +6,7 @@ const MAX_INPUT_CHARACTERS = 40000;
 const [instructionsPath, ...inputPaths] = process.argv.slice(2);
 const apiKey = process.env.OPENAI_API_KEY;
 const model = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
+const baseUrl = (process.env.OPEN_AI_BASE_URL || 'https://api.openai.com').replace(/\/+$/, '').replace(/\/v1$/, '');
 
 if (!instructionsPath || inputPaths.length === 0) {
   console.error('Usage: node scripts/ask-ai.mjs <instructions> <input> [more inputs]');
@@ -23,7 +24,7 @@ if (input.length > MAX_INPUT_CHARACTERS) {
   input = `${input.slice(0, MAX_INPUT_CHARACTERS)}\n[input cut at ${MAX_INPUT_CHARACTERS} characters]`;
 }
 
-const response = await fetch('https://api.openai.com/v1/responses', {
+const response = await fetch(`${baseUrl}/v1/responses`, {
   method: 'POST',
   headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
   body: JSON.stringify({ model, instructions, input, temperature: 0.2, max_output_tokens: 1200 }),
